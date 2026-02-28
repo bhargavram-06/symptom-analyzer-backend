@@ -4,19 +4,27 @@ const colors = require('colors');
 const cors = require('cors');
 const connectDB = require('./config/db');
 
-// Import your new Auth routes and Symptom routes
-const authRoutes = require('./routes/authRoutes'); // Changed from userRoutes
+// Import routes
+const authRoutes = require('./routes/authRoutes');
 const symptomRoutes = require('./routes/symptomRoutes');
 
 dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+
+// 1. Updated CORS Configuration for Netlify
+app.use(cors({
+    origin: ["https://symptom-analyzer.netlify.app", "http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
-// Redirect the API paths to your new route files
-app.use('/api/auth', authRoutes); // Professional naming for Login/Register
+// 2. Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/symptoms', symptomRoutes);
 
 app.get('/', (req, res) => {
